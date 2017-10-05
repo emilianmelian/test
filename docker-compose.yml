@@ -1,0 +1,71 @@
+version: '2'
+services:
+  keydata:
+    image: appcontainers/jenkins:debian
+    hostname: jenkins-keys
+    stdin_open: true
+    tty: true
+    volumes:
+    - /var/lib/jenkins_slave_key
+    environment:
+    - ROLE=slave
+    - SSH_PASS=jenkinspassword
+    command: sleep 1
+
+  data:
+    image: appcontainers/jenkins:debian
+    hostname: jenkins-data
+    stdin_open: true
+    tty: true
+    volumes_from:
+    - keydata
+    volumes:
+    - /var/lib/jenkins
+    environment:
+    - ROLE=slave
+    - SSH_PASS=jenkinspassword
+    command: sleep 1
+
+  slave:
+    image: pippajean/aut-master-slave:slave
+    hostname: slave
+    stdin_open: true
+    tty: true
+    restart: always
+    privileged: true
+    environment:
+    - ROLE=slave
+    - SSH_PASS=jenkinspassword
+    volumes_from:
+    - keydata
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+    - "dev-www.pippajean.com:172.18.0.1"
+    - "dev-commission.pippajean.com:172.18.0.1"
+    - "dev-short.pippajean.com:172.18.0.1"
+    - "dev-hub.pippajean.com:172.18.0.1"
+
+
+  web:
+    image: pippajean/aut-master-slave:master
+    hostname: jenkins
+    stdin_open: true
+    tty: true
+    restart: always
+    ports:
+    - "81:8080"
+    environment:
+    - ROLE=master
+    - SSH_PASS=jenkinspassword
+    volumes_from:
+    - keydata
+    - data
+    extra_hosts:
+    - "dev-www.pippajean.com:172.18.0.1"
+    - "dev-commission.pippajean.com:172.18.0.1"
+    - "dev-short.pippajean.com:172.18.0.1"
+    - "dev-hub.pippajean.com:172.18.0.1"
+    links:
+    - slave
+    command: /bin/bash
