@@ -41,10 +41,7 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
-    - "dev-www.pippajean.com:172.18.0.1"
-    - "dev-commission.pippajean.com:172.18.0.1"
-    - "dev-short.pippajean.com:172.18.0.1"
-    - "dev-hub.pippajean.com:172.18.0.1"
+    - "dev-hub.andrada.com:172.18.0.1"
 
 
   web:
@@ -62,10 +59,7 @@ services:
     - keydata
     - data
     extra_hosts:
-    - "dev-www.pippajean.com:172.18.0.1"
-    - "dev-commission.pippajean.com:172.18.0.1"
-    - "dev-short.pippajean.com:172.18.0.1"
-    - "dev-hub.pippajean.com:172.18.0.1"
+    - "dev-hub.andrada.com:172.18.0.1"
     links:
     - slave
     command: /bin/bash
